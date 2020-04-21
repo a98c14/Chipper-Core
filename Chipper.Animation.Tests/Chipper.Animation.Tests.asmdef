@@ -1,0 +1,25 @@
+{
+    "name": "Chipper.Animation.Tests",
+    "references": [
+        "Chipper.Animation",
+        "Unity.Entities",
+        "Unity.Collections",
+        "Unity.Jobs",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Transforms"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

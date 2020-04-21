@@ -1,0 +1,17 @@
+{
+  "name": "Chipper.Rendering.Editor",
+  "references": [
+    "Chipper.Rendering",
+    "Chipper.Editor",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Mathematics",
+    "Unity.Entities"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [
+      "Editor"
+  ],
+  "excludePlatforms": [],
+	"allowUnsafeCode": false
+}

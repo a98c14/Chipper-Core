@@ -1,0 +1,16 @@
+{
+  "name": "Chipper.Rendering",
+  "references": [
+    "Chipper.Transforms",
+    "Unity.Transforms",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Mathematics",
+    "Unity.Jobs",
+    "Unity.Entities"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+	"allowUnsafeCode": false
+}

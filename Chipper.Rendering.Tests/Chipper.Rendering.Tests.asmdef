@@ -1,0 +1,19 @@
+{
+    "name": "Chipper.Rendering.Tests",
+    "references": [
+        "Chipper.Rendering",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Jobs",
+        "Unity.Entities"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+	"allowUnsafeCode": false
+}

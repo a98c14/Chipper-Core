@@ -1,0 +1,17 @@
+{
+  "name": "Chipper.Animation.Editor",
+  "references": [
+    "Chipper.Animation",
+    "Chipper.Editor",
+    "Unity.Collections",
+    "Unity.Burst",
+    "Unity.Mathematics",
+    "Unity.Entities"
+  ],
+  "optionalUnityReferences": [],
+  "includePlatforms": [
+      "Editor"
+  ],
+  "excludePlatforms": [],
+	"allowUnsafeCode": false
+}

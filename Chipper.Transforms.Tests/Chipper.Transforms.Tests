@@ -1,0 +1,20 @@
+{
+    "name": "Chipper.Transforms.Tests",
+    "references": [
+        "Chipper.Transforms",
+        "Unity.Transforms",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Jobs",
+        "Unity.Entities"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+	"allowUnsafeCode": false
+}
