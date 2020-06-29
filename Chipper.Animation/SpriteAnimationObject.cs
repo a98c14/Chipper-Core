@@ -70,6 +70,7 @@ namespace Chipper.Animation
             using (var builder = new BlobBuilder(Allocator.Temp))
             {
                 ref var root = ref builder.ConstructRoot<AnimationBlob>();
+                root.ID = GetHashCode();
                 root.Priority = Priority;
                 root.TransitionType = TransitionType;
 

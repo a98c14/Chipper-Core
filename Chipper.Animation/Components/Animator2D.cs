@@ -33,6 +33,16 @@ namespace Chipper.Animation
             CanBeOverridden = false;
         }
 
+        public void PlayIfNotSame(Animation2D anim, int frame = 0)
+        {
+            if (anim.ID == Animation.ID)
+                return;
+
+            Frame = frame;
+            Animation = anim;
+            CanBeOverridden = false;
+        }
+
         public void ClearIf(Animation2D anim)
         {
             if (Animation.ID == anim.ID)
