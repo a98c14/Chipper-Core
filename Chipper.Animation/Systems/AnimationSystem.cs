@@ -30,6 +30,9 @@ namespace Chipper.Animation
                     if (animator.Clock >= animator.Speed)
                     {
                         var animation = animator.Animation;
+                        if (!animation.IsCreated)
+                            return;
+
                         animator.Clock -= animator.Speed;
                         animator.Frame++;
 

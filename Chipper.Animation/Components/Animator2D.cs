@@ -4,9 +4,10 @@ namespace Chipper.Animation
 {
     public struct  Animator2D : IComponentData
     {
-        public int FrameCount                     => Animation.Length;
-        public int CurrentPriority                => Animation.Priority;
-        public AnimationTransition TransitionType => Animation.TransitionType;
+        public bool IsNull                        => !Animation.IsCreated;
+        public int FrameCount                     => Animation.IsCreated ? Animation.Length : 0;
+        public int CurrentPriority                => Animation.IsCreated ? Animation.Priority : 0;
+        public AnimationTransition TransitionType => Animation.IsCreated ? Animation.TransitionType : AnimationTransition.Loop;
 
         // If True, lower priority animations can override the current animation
         public bool  CanBeOverridden; 
@@ -35,7 +36,7 @@ namespace Chipper.Animation
 
         public void PlayIfNotSame(Animation2D anim, int frame = 0)
         {
-            if (anim.ID == Animation.ID)
+            if (Animation.IsCreated && anim.ID == Animation.ID)
                 return;
 
             Frame = frame;
@@ -45,12 +46,12 @@ namespace Chipper.Animation
 
         public void ClearIf(Animation2D anim)
         {
-            if (Animation.ID == anim.ID)
+            if (Animation.IsCreated && Animation.ID == anim.ID)
                 CanBeOverridden = true;
         }
 
         public void Clear() => CanBeOverridden = true;
 
-        public bool IsPlaying(Animation2D anim) => Animation.ID == anim.ID;
+        public bool IsPlaying(Animation2D anim) => Animation.IsCreated && Animation.ID == anim.ID;
     }
 }
