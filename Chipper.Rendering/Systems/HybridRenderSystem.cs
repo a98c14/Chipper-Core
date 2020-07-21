@@ -98,7 +98,8 @@ namespace Chipper.Rendering
                 ComponentType.ReadOnly(typeof(RenderInfo)),
                 ComponentType.ReadOnly(typeof(MaterialInfo)),
                 ComponentType.Exclude(typeof(RenderIndex)),
-                ComponentType.Exclude(typeof(NoRender)));
+                ComponentType.Exclude(typeof(NoRender)),
+                ComponentType.Exclude(typeof(Prefab)));
 
             m_UpdateGroup = GetEntityQuery(
                 ComponentType.ReadOnly(typeof(Position2D)),
@@ -107,11 +108,13 @@ namespace Chipper.Rendering
                 ComponentType.ReadOnly(typeof(Scale2D)),
                 ComponentType.ReadOnly(typeof(Rotation2D)),
                 ComponentType.ReadOnly(typeof(MaterialInfo)),
-                ComponentType.Exclude(typeof(NoRender)));
+                ComponentType.Exclude(typeof(NoRender)),
+                ComponentType.Exclude(typeof(Prefab)));
 
             m_DestroyedGroup = GetEntityQuery(
                 ComponentType.ReadOnly(typeof(RenderIndex)),
-                ComponentType.Exclude(typeof(Position2D)));
+                ComponentType.Exclude(typeof(Position2D)),
+                ComponentType.Exclude(typeof(Prefab)));
         }
 
         protected override void OnUpdate()

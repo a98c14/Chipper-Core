@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Chipper.Animation
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     [RequiresEntityConversion, DisallowMultipleComponent]
     [AddComponentMenu("Chipper/Animation/Animation Store Authoring")]
     public class AnimationStoreAuthoring : MonoBehaviour, IConvertGameObjectToEntity
