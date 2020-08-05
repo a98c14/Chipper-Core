@@ -95,9 +95,9 @@ namespace Chipper.Rendering
                 return;
 
             var chunks = m_UpdateGroup.CreateArchetypeChunkArray(Allocator.TempJob);
-            var indexType = GetArchetypeChunkComponentType<ParticleRenderIndex>(true);
-            var localToWorldType = GetArchetypeChunkComponentType<LocalToWorld>(true);
-            var rotationType = GetArchetypeChunkComponentType<RotationEulerXYZ>(true);
+            var indexType = GetComponentTypeHandle<ParticleRenderIndex>(true);
+            var localToWorldType = GetComponentTypeHandle<LocalToWorld>(true);
+            var rotationType = GetComponentTypeHandle<RotationEulerXYZ>(true);
 
             for (int i = 0; i < chunks.Length; i++)
             {

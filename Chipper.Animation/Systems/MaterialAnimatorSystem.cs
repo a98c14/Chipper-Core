@@ -14,7 +14,7 @@ namespace Chipper.Rendering
         struct Animate : IJobForEachWithEntity<Translation>
         {
             [ReadOnly] public float Dt;
-            [ReadOnly] public EntityCommandBuffer.Concurrent  CommandBuffer;
+            [ReadOnly] public EntityCommandBuffer.ParallelWriter  CommandBuffer;
 
             [NativeDisableParallelForRestriction]
             public BufferFromEntity<MaterialUpdateElement> MaterialUpdateBuffers;
@@ -86,7 +86,7 @@ namespace Chipper.Rendering
                 Dt = UnityEngine.Time.deltaTime,
                 MaterialAnimationBuffers = GetBufferFromEntity<MaterialAnimation>(false),
                 MaterialUpdateBuffers = GetBufferFromEntity<MaterialUpdateElement>(false),
-                CommandBuffer = m_CommandBufferSystem.CreateCommandBuffer().ToConcurrent(),
+                CommandBuffer = m_CommandBufferSystem.CreateCommandBuffer().AsParallelWriter(),
             }.Schedule(this, inputDeps);
             m_CommandBufferSystem.AddJobHandleForProducer(job);
             return job;

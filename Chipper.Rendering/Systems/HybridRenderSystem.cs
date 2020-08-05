@@ -56,14 +56,14 @@ namespace Chipper.Rendering
 
         struct ChunkComponentTypes
         {
-            public ArchetypeChunkComponentType<SpriteID>           SpriteID;
-            public ArchetypeChunkComponentType<RenderInfo>         RenderInfo;
-            public ArchetypeChunkComponentType<RenderIndex>        RenderIndex;
-            public ArchetypeChunkComponentType<Position2D>         Position;
-            public ArchetypeChunkComponentType<Rotation2D>         Rotation;
-            public ArchetypeChunkComponentType<Scale2D>            Scale;
-            public ArchetypeChunkComponentType<RenderFlipState>    FlipState;
-            public ArchetypeChunkBufferType<MaterialUpdateElement> MaterialProperties;
+            public ComponentTypeHandle<SpriteID>           SpriteID;
+            public ComponentTypeHandle<RenderInfo>         RenderInfo;
+            public ComponentTypeHandle<RenderIndex>        RenderIndex;
+            public ComponentTypeHandle<Position2D>         Position;
+            public ComponentTypeHandle<Rotation2D>         Rotation;
+            public ComponentTypeHandle<Scale2D>            Scale;
+            public ComponentTypeHandle<RenderFlipState>    FlipState;
+            public BufferTypeHandle<MaterialUpdateElement> MaterialProperties;
         }
 
         Transform                   m_Root;
@@ -173,14 +173,14 @@ namespace Chipper.Rendering
 
             var types = new ChunkComponentTypes
             {
-                RenderIndex        = GetArchetypeChunkComponentType<RenderIndex>(true),
-                Position           = GetArchetypeChunkComponentType<Position2D>(true),
-                Rotation           = GetArchetypeChunkComponentType<Rotation2D>(true),
-                SpriteID           = GetArchetypeChunkComponentType<SpriteID>(true),
-                Scale              = GetArchetypeChunkComponentType<Scale2D>(true),
-                RenderInfo         = GetArchetypeChunkComponentType<RenderInfo>(true),
-                FlipState          = GetArchetypeChunkComponentType<RenderFlipState>(true),
-                MaterialProperties = GetArchetypeChunkBufferType<MaterialUpdateElement>(false),
+                RenderIndex        = GetComponentTypeHandle<RenderIndex>(true),
+                Position           = GetComponentTypeHandle<Position2D>(true),
+                Rotation           = GetComponentTypeHandle<Rotation2D>(true),
+                SpriteID           = GetComponentTypeHandle<SpriteID>(true),
+                Scale              = GetComponentTypeHandle<Scale2D>(true),
+                RenderInfo         = GetComponentTypeHandle<RenderInfo>(true),
+                FlipState          = GetComponentTypeHandle<RenderFlipState>(true),
+                MaterialProperties = GetBufferTypeHandle<MaterialUpdateElement>(false),
             };
 
             foreach (var kv in m_RenderPools)

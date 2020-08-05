@@ -20,7 +20,7 @@ namespace Chipper.Animation
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             var dt = Time.DeltaTime;
-            var commandBuffer = m_CommandBufferSystem.CreateCommandBuffer().ToConcurrent();
+            var commandBuffer = m_CommandBufferSystem.CreateCommandBuffer().AsParallelWriter();
 
             var jobHandle = Entities
                 .WithName("AnimationSystem")
@@ -48,7 +48,7 @@ namespace Chipper.Animation
             return jobHandle;
         }
 
-        static void Transition(int index, Entity entity, ref Animator2D animator, EntityCommandBuffer.Concurrent commandBuffer)
+        static void Transition(int index, Entity entity, ref Animator2D animator, EntityCommandBuffer.ParallelWriter commandBuffer)
         {
             switch (animator.TransitionType)
             {

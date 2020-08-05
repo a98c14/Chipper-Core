@@ -127,10 +127,10 @@ namespace Chipper.Rendering
                 return;
 
             var chunks = m_UpdateGroup.CreateArchetypeChunkArray(Allocator.TempJob);
-            var entityType = GetArchetypeChunkEntityType();
-            var indexType = GetArchetypeChunkComponentType<TrailRenderIndex>(true);
-            var localToWorldType = GetArchetypeChunkComponentType<LocalToWorld>(true);
-            var rotationType = GetArchetypeChunkComponentType<Rotation2D>(true);
+            var entityType = GetEntityTypeHandle();
+            var indexType = GetComponentTypeHandle<TrailRenderIndex>(true);
+            var localToWorldType = GetComponentTypeHandle<LocalToWorld>(true);
+            var rotationType = GetComponentTypeHandle<Rotation2D>(true);
             var invalidIndexes = new NativeList<Entity>(5, Allocator.Temp);
 
             for (int i = 0; i < chunks.Length; i++)
