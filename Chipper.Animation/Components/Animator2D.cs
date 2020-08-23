@@ -5,6 +5,7 @@ namespace Chipper.Animation
     public struct  Animator2D : IComponentData
     {
         public bool IsNull                        => !Animation.IsCreated;
+        public bool HasCompletedCurrentAnimation  => Animation.IsCreated && Animation.Length == Frame + 1;
         public int FrameCount                     => Animation.IsCreated ? Animation.Length : 0;
         public int CurrentPriority                => Animation.IsCreated ? Animation.Priority : 0;
         public AnimationTransition TransitionType => Animation.IsCreated ? Animation.TransitionType : AnimationTransition.Loop;
@@ -53,5 +54,6 @@ namespace Chipper.Animation
         public void Clear() => CanBeOverridden = true;
 
         public bool IsPlaying(Animation2D anim) => Animation.IsCreated && Animation.ID == anim.ID;
+        public bool HasCompleted(Animation2D anim) => Animation.IsCreated && Animation.ID == anim.ID && Animation.Length == Frame + 1;
     }
 }

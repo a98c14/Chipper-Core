@@ -21,6 +21,8 @@ namespace Chipper.Transforms
 
                 if (hasParent)
                 {
+                    var parent = GetPrimaryEntity(transform.parent);
+                    DstEntityManager.AddComponentData(entity, new Parent2D { Value = parent });
                     DstEntityManager.RemoveComponent<LocalToParent>(entity);
                     DstEntityManager.RemoveComponent<Parent>(entity);
                 }
