@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Chipper.Animation
 {
-    [RequiresEntityConversion, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     [AddComponentMenu("ECSProxy/Effects/Material Animator Proxy")]
     [RequireComponent(typeof(SpriteRenderer))]
     public class MaterialAnimatorProxy : MonoBehaviour, IConvertGameObjectToEntity

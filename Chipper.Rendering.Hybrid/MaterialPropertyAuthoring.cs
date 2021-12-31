@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Chipper.Rendering
 {
-    [RequiresEntityConversion, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     [AddComponentMenu("Chipper/Rendering/Material Property Authoring")]
     public class MaterialPropertyAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {

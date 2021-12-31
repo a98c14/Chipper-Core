@@ -16,6 +16,10 @@ namespace Chipper.Rendering
 
             Entities.ForEach((SpriteRenderer renderer) =>
             {
+                // If no material is attached to entity, do not render it
+                if (renderer.sharedMaterial == null)
+                    return;
+
                 var entity     = GetPrimaryEntity(renderer);
                 var material   = renderer.sharedMaterial;
                 var gameObject = renderer.gameObject;

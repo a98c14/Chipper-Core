@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Chipper.Animation
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    [RequiresEntityConversion, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     [AddComponentMenu("Chipper/Animation/Sprite Animator Authoring")]
     public class SpriteAnimatorAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
@@ -12,17 +12,10 @@ namespace Chipper.Animation
 
         public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
         {
-            Animation2D comp;
-
-            if (Animation != null)
-                comp = Animation.Component;
-            else
-                comp = new Animation2D();
-
             dstManager.AddComponentData(entity, new Animator2D
             {
                 Speed = Constant.DefaultAnimationSpeed,
-                Animation = comp,
+                Animation = Animation?.Component ?? default,
             });
         }
     }

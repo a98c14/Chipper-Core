@@ -3,7 +3,6 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [AddComponentMenu("Game/Shadow Authoring")]
-[RequiresEntityConversion]
 public class ShadowAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
     public float    Size;
