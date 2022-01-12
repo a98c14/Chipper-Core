@@ -1,16 +1,12 @@
 {
-    "name": "Chipper.Transforms.Hybrid",
+    "name": "Chipper.Prefabs",
     "rootNamespace": "",
     "references": [
-        "Chipper.Transforms",
-        "Chipper.Prefabs",
-        "Unity.Transforms",
-        "Unity.Collections",
-        "Unity.Burst",
-        "Unity.Mathematics",
-        "Unity.Jobs",
-        "Unity.Entities",
-        "Unity.Entities.Hybrid"
+        "GUID:734d92eba21c94caba915361bd5ac177",
+        "GUID:75912f6de853d3844a2c2da6f5c6b5ea",
+        "GUID:16cd433b7a1b61f4bb27c42cc1156059",
+        "GUID:d8f9d52001aff4a43bc7fb24ae536c0a",
+        "GUID:4fb48b3f158c7784193323752b7bd573"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

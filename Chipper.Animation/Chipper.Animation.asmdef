@@ -1,16 +1,22 @@
 {
-  "name": "Chipper.Animation",
-  "references": [
-    "Chipper.Rendering",
-    "Unity.Transforms",
-    "Unity.Collections",
-    "Unity.Burst",
-    "Unity.Mathematics",
-    "Unity.Jobs",
-    "Unity.Entities"
-  ],
-  "optionalUnityReferences": [],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-	"allowUnsafeCode": false
+    "name": "Chipper.Animation",
+    "rootNamespace": "",
+    "references": [
+        "Chipper.Rendering",
+        "Unity.Transforms",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Jobs",
+        "Unity.Entities"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

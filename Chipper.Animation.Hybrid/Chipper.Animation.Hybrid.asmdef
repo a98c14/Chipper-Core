@@ -1,15 +1,22 @@
 {
-  "name": "Chipper.Animation.Hybrid",
-  "references": [
-    "Chipper.Animation",
-    "Unity.Collections",
-    "Unity.Burst",
-    "Unity.Mathematics",
-    "Unity.Entities",
-    "Unity.Entities.Hybrid"
-  ],
-  "optionalUnityReferences": [],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false
+    "name": "Chipper.Animation.Hybrid",
+    "rootNamespace": "",
+    "references": [
+        "Chipper.Animation",
+        "Chipper.Prefabs",
+        "Unity.Collections",
+        "Unity.Burst",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Entities.Hybrid"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
