@@ -1,5 +1,7 @@
 using Chipper.Animation;
+using Chipper.Prefabs.Data;
 using Chipper.Prefabs.Types;
+using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -7,10 +9,14 @@ namespace Chipper.Prefabs
 {
     public interface IPrefabConversionSystem
     {
-        Entity GetPrefabEntity(int prefabId);
-        Sprite GetSprite(int spriteId);
+        List<PrefabEntity> PrefabEntities { get; }
+        bool TryGetEntity(int prefabId, out Entity prefabEntity);
+        bool TryGetEntity(string prefabName, out Entity prefabEntity);
+        bool TryGetPrefabEntity(int prefabId, out PrefabEntity prefabEntity);
+        bool TryGetPrefabEntity(string prefabName, out PrefabEntity prefabEntity);
+        UnityEngine.Sprite GetSprite(int spriteId);
         
-        int GetSpriteId(Sprite sprite);
+        int GetSpriteId(UnityEngine.Sprite sprite);
         int GetMaterialId(Material material);
 
         int GetUnityRenderLayerId(RenderLayer layer);
@@ -18,6 +24,5 @@ namespace Chipper.Prefabs
 
         Animation2D GetAnimation(int id);
         MaterialAnimation GetMaterialAnimation(int id);
-        
     }
 }

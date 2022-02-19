@@ -17,7 +17,7 @@ namespace Chipper.Prefabs.Parser
             var root = new PartProccessItem
             {
                 Type = rootType,
-                Child = new Dictionary<string, ModulePart>(),
+                Children = new Dictionary<string, ModulePart>(),
             };
             proccessQueue.Enqueue(root);
             while (proccessQueue.Count > 0)
@@ -30,6 +30,12 @@ namespace Chipper.Prefabs.Parser
                     var typeAttr = fields[i].GetCustomAttribute<EditorTypeAttribute>();
                     var tooltipAttr = fields[i].GetCustomAttribute<EditorTooltipAttribute>();
                     var tooltip = tooltipAttr != null ? tooltipAttr.Tooltip : "";
+                    var isArray = typeof(IEnumerable).IsAssignableFrom(fieldType) && fieldType.IsGenericType;
+
+                    // Use the generic argument of fieldType if its a generic collection
+                    if(isArray)
+                        fieldType = fieldType.GetGenericArguments()[0];
+
                     var type = fieldType switch
                     {
                         var t when t == typeof(Vector2)  => EditorType.Vec2,
@@ -43,42 +49,43 @@ namespace Chipper.Prefabs.Parser
                         var t when t == typeof(string)   => EditorType.Text,
                         var t when t == typeof(Color)    => EditorType.Color,
                         var t when t == typeof(Material) => EditorType.Material,
+                        var t when t.IsEnum              => EditorType.Enum,
                         var t when t == typeof(UnityEngine.Sprite) => EditorType.Sprite,
                         _ => EditorType.Object
                     };
                     type = typeAttr != null ? typeAttr.ValueType : type;
-                    var isArray = fieldType.IsAssignableFrom(typeof(IEnumerable));
+
                     if (type == EditorType.Object)
                     {
                         var children = new Dictionary<string, ModulePart>();
-                        currentElement.Child.Add(fields[i].Name, new ModulePart
+                        currentElement.Children.Add(fields[i].Name, new ModulePart
                         {
-                            Description = tooltip,
+                            Tooltip = tooltip,
                             IsArray = isArray,
                             ValueType = type,
-                            Child = children,
+                            Children = children,
                         });
 
                         proccessQueue.Enqueue(new PartProccessItem
                         {
                             Type = fieldType,
-                            Child = children,
+                            Children = children,
                         });
                     }
                     else
                     {
-                        currentElement.Child.Add(fields[i].Name, new ModulePart
+                        currentElement.Children.Add(fields[i].Name, new ModulePart
                         {
-                            Description = tooltip, 
+                            Tooltip = tooltip, 
                             IsArray = isArray,
                             ValueType = type,
-                            Child = null,
+                            Children = null,
                         });
                     }
                 }
             }
 
-            return root.Child;
+            return root.Children;
         }
     }
 }

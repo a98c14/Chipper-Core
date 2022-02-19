@@ -1,18 +1,25 @@
+using Chipper.Prefabs.Attributes;
 using Chipper.Prefabs.Data;
-using Chipper.Prefabs.Network;
 using Chipper.Prefabs.Parser;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
+using System.Reflection;
 
 namespace Chipper.Prefabs
 {
     public class AssetManager
     {
+        public static List<AssetCache.IUnityAssetCache> AssetCaches
+        {
+            get
+            {
+                return AssetCache.Main.Caches;
+            }
+        }
+
         public static string[] GetModuleJsonData()
         {
             var type = typeof(IPrefabModule);
@@ -36,6 +43,9 @@ namespace Chipper.Prefabs
                     { "Structure", TypeParser.GetParts(types[i]) }
                 };
 
+                var formerName = types[i].GetCustomAttribute<FormerNameAttribute>();
+                if(formerName != null)
+                    dict["FormerName"] = formerName.Name;
                 var json = JsonConvert.SerializeObject(dict, settings);
                 jsons[i] = json;
             }

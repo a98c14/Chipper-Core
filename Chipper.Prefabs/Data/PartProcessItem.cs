@@ -6,6 +6,6 @@ namespace Chipper.Prefabs.Data
     internal class PartProccessItem
     {
         public Type Type;
-        public Dictionary<string, ModulePart> Child;
+        public Dictionary<string, ModulePart> Children;
     }
 }

@@ -98,7 +98,7 @@ namespace Chipper.Prefabs.Parser
                         case string a when a.StartsWith("internalid"):
                         {
                             var internalId = cleanLine.Split(' ')[1];
-                            activeSprite.InternalId = internalId;
+                            activeSprite.InternalId = long.Parse(internalId);
                         }
                         break;
                     }

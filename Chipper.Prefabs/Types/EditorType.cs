@@ -22,9 +22,11 @@ namespace Chipper.Prefabs.Types
         Audio,
         Prefab,
         ItemPool,
-
+        StatusEffect,
         SpawnPrefab, // Refer to Spawnable.cs
         SkillSpawnPrefab, // Refer to Spawnable.cs
         MaterialAnimation,
+        Enum,
+        DamageType,
     }
 }

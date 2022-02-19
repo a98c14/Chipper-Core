@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Chipper.Prefabs.Data
 {
-    internal class ModulePart
+    public class ModulePart
     {
-        public string Description;
+        public string Tooltip;
         public bool IsArray;
         public EditorType ValueType;
-        public Dictionary<string, ModulePart> Child;
+        public Dictionary<string, ModulePart> Children;
     }
 }

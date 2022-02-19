@@ -5,5 +5,4 @@ namespace Chipper.Prefabs.Data
         public float x;
         public float y;
     }
-
 }
