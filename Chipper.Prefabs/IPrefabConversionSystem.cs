@@ -3,7 +3,6 @@ using Chipper.Prefabs.Data;
 using Chipper.Prefabs.Types;
 using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
 
 namespace Chipper.Prefabs
 {
@@ -15,9 +14,7 @@ namespace Chipper.Prefabs
         bool TryGetPrefabEntity(int prefabId, out PrefabEntity prefabEntity);
         bool TryGetPrefabEntity(string prefabName, out PrefabEntity prefabEntity);
         UnityEngine.Sprite GetSprite(int spriteId);
-        
-        int GetSpriteId(UnityEngine.Sprite sprite);
-        int GetMaterialId(Material material);
+        int GetSpriteIndex(int spriteId);
 
         int GetUnityRenderLayerId(RenderLayer layer);
         int GetUnitySortingLayerId(RenderSortLayer layer);

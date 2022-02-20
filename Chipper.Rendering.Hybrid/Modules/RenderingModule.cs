@@ -10,17 +10,19 @@ namespace Chipper.Rendering
         public RenderLayer Layer;
         public RenderSortLayer SortLayer;
         public Color Color;
-        public Material Material;
-        public Sprite Sprite;
+        public int MaterialId;
+        public int SpriteId;
 
         public bool FlipX;
         public bool FlipY;
 
         public void Convert(Entity entity, EntityManager dstManager, IPrefabConversionSystem conversionSystem)
         {
-            var material = conversionSystem.GetMaterialId(Material);
-            var sprite = new SpriteID(conversionSystem.GetSpriteId(Sprite));
-            dstManager.AddComponentData(entity, sprite);
+            
+            dstManager.AddComponentData(entity, new SpriteID
+            {
+                Value = conversionSystem.GetSpriteIndex(SpriteId),
+            });
 
             dstManager.AddComponentData(entity, new RenderInfo
             {
@@ -38,10 +40,8 @@ namespace Chipper.Rendering
 
             dstManager.AddSharedComponentData(entity, new MaterialInfo
             {
-                MaterialID = material,
+                MaterialID = MaterialId,
             });
         }
-
     }
-
 }

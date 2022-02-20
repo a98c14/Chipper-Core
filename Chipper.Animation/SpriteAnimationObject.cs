@@ -67,19 +67,17 @@ namespace Chipper.Animation
         BlobAssetReference<AnimationBlob> CreateBlob()
         {
             var spriteLoader = SpriteLoader.Main;
-            using (var builder = new BlobBuilder(Allocator.Temp))
-            {
-                ref var root = ref builder.ConstructRoot<AnimationBlob>();
-                root.ID = GetHashCode();
-                root.Priority = Priority;
-                root.TransitionType = TransitionType;
+            using var builder = new BlobBuilder(Allocator.Temp);
+            ref var root = ref builder.ConstructRoot<AnimationBlob>();
+            root.ID = GetHashCode();
+            root.Priority = Priority;
+            root.TransitionType = TransitionType;
 
-                var sprites = builder.Allocate(ref root.Sprites, Sprites.Length);
-                for (int i = 0; i < Sprites.Length; i++)
-                    sprites[i] = spriteLoader.GetSpriteID(Sprites[i]);
+            var sprites = builder.Allocate(ref root.Sprites, Sprites.Length);
+            for (int i = 0; i < Sprites.Length; i++)
+                sprites[i] = spriteLoader.GetSpriteID(Sprites[i]);
 
-                return builder.CreateBlobAssetReference<AnimationBlob>(Allocator.Persistent);
-            }
+            return builder.CreateBlobAssetReference<AnimationBlob>(Allocator.Persistent);
         }
     }
 }

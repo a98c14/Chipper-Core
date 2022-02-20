@@ -26,14 +26,14 @@ namespace Chipper.Prefabs.Conversion
         // Maps prefab part ids to actual IPrefabPart implementations;
         Dictionary<int, IPrefabModule> m_ComponentMap = new Dictionary<int, IPrefabModule>();
 
-        AssetCache m_AssetCache;
+        AssetCacheManager m_AssetCache;
 
         protected async override void OnCreate()
         {
             m_EntityNameMap = new Dictionary<string, PrefabEntity>();
             m_EntityIdMap = new Dictionary<int, PrefabEntity>();
             m_IdNameMap = new Dictionary<string, int>();
-            m_AssetCache = AssetCache.Main;
+            m_AssetCache = AssetCacheManager.Main;
             PrefabEntities = new List<PrefabEntity>();
             var client = new HyperionClient();
 
@@ -45,40 +45,28 @@ namespace Chipper.Prefabs.Conversion
                 m_ModuleNameIdMap[module.Name] = module.Id;
 
             // Load prefabs and create prefab entities
-            //var prefabs = await client.GetPrefabsDetailed();
-            //foreach (var prefab in prefabs)
-            //{
-            //    var entity = EntityManager.CreateEntity(typeof(Prefab));
-            //    EntityManager.SetName(entity, prefab.Name);
-
-            //    // TODO(selim): Instead of serializing to json and deserializing just convert
-            //    // from dictionary to desired type directly
-            //    foreach (var (name, value) in PrefabParser.SerializePrefabModules(prefab))
-            //    {
-            //        var internalId = m_IdNameMap[name];
-            //        var m = m_ComponentMap[internalId];
-            //        var js = (IPrefabModule)JsonConvert.DeserializeObject(value, m.GetType(), new JsonSerializerSettings
-            //        {
-            //            NullValueHandling = NullValueHandling.Ignore,
-            //            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            //        });
-            //        js.Convert(entity, EntityManager, this);
-            //    }
-
-            //    SavePrefabEntity(prefab, entity);
-            //}
-
-            // Fetch sprite ids from backend
-            var sprites = await client.GetSpritesAsync();
-            foreach(var sprite in sprites)
+            var prefabs = await client.GetPrefabsDetailed();
+            foreach (var prefab in prefabs)
             {
-                //var assets = m_AssetCache.(sprite.InternalId);
+                var entity = EntityManager.CreateEntity(typeof(Prefab));
+                EntityManager.SetName(entity, prefab.Name);
+
+                // TODO(selim): Instead of serializing to json and deserializing just convert
+                // from dictionary to desired type directly
+                foreach (var (name, value) in PrefabParser.SerializePrefabModules(prefab))
+                {
+                    var internalId = m_IdNameMap[name];
+                    var m = m_ComponentMap[internalId];
+                    var js = (IPrefabModule)JsonConvert.DeserializeObject(value, m.GetType(), new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    });
+                    js.Convert(entity, EntityManager, this);
+                }
+
+                SavePrefabEntity(prefab, entity);
             }
-            
-
-            // Map backend sprites to unity sprites (asset cache)
-
-            // Fetch animations from backend
         }
 
 
@@ -157,22 +145,6 @@ namespace Chipper.Prefabs.Conversion
             return false;
         }
 
-
-        public UnityEngine.Sprite GetSprite(int spriteId)
-        {
-            return null;
-        }
-
-        public int GetSpriteId(UnityEngine.Sprite sprite)
-        {
-            return 0;
-        }
-
-        public int GetMaterialId(Material material)
-        {
-            return 0;
-        }
-
         public int GetUnityRenderLayerId(RenderLayer layer)
         {
             return 0;
@@ -185,7 +157,8 @@ namespace Chipper.Prefabs.Conversion
 
         public Animation2D GetAnimation(int id)
         {
-            return new Animation2D();
+            var anim = m_AssetCache.GetAnimation(id);
+            return m_AssetCache.CreateAnimationBlob(anim);
         }
 
         public MaterialAnimation GetMaterialAnimation(int id)
@@ -225,5 +198,8 @@ namespace Chipper.Prefabs.Conversion
             m_EntityIdMap.Add(p.Id, p);
             PrefabEntities.Add(p);
         }
+
+        public UnityEngine.Sprite GetSprite(int spriteId) => m_AssetCache.GetAsset<UnityEngine.Sprite>(spriteId);
+        public int GetSpriteIndex(int spriteId) => m_AssetCache.SpriteCache.GetAssetIndex(spriteId);
     }
 }

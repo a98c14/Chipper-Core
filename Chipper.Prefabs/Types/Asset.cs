@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Chipper.Prefabs.Types
 {
+    [Serializable]
     public class Asset 
     {
         public int Id { get; set;}

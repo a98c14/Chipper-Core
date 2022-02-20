@@ -12,11 +12,11 @@ namespace Chipper.Prefabs
 {
     public class AssetManager
     {
-        public static List<AssetCache.IUnityAssetCache> AssetCaches
+        public static List<IUnityAssetCache> AssetCaches
         {
             get
             {
-                return AssetCache.Main.Caches;
+                return AssetCacheManager.Main.Caches;
             }
         }
 

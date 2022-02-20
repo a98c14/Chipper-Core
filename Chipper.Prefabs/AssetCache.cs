@@ -1,15 +1,13 @@
 using Chipper.Prefabs.Types;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(menuName = "Asset Cache")]
-public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
+namespace Chipper.Prefabs
 {
     public interface IUnityAssetCache
     {
@@ -17,13 +15,14 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
         AssetType CacheType { get; }
         void RebuildCache(string path);
         void Sync(Asset[] assets);
+        object GetAsset(int assetId);
+        void SerializeCache();
     }
 
-    #region AssetCacheGroup
     [Serializable]
-    public class UnityAssetCache<T> : IUnityAssetCache where T : UnityEngine.Object
+    public class AssetCache<T> : IUnityAssetCache where T : UnityEngine.Object
     {
-        public AssetType CacheType { get ; private set; }
+        public AssetType CacheType { get; private set; }
         public Asset[] Assets { get; private set; }
 
         /// <summary>
@@ -34,14 +33,18 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
         /// <summary>
         /// Loaded asset objects
         /// </summary>
+        [SerializeField]
         private T[] m_AssetObjects;
+
+        [SerializeField]
+        private int[] m_IndexAssetIds;
 
         // Internal index mapping structures
         private Dictionary<string, int> m_NameMap;
         private Dictionary<long, int> m_InternalIdMap;
         private Dictionary<string, int> m_GuidMap;
 
-        public UnityAssetCache(string resourcePath, AssetType type)
+        public AssetCache(string resourcePath, AssetType type)
         {
             CacheType = type;
             RebuildCache(resourcePath);
@@ -49,14 +52,14 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
 
         public void RebuildCache(string resourcePath)
         {
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
             m_AssetObjects = Resources.LoadAll<T>(resourcePath);
             m_NameMap = new Dictionary<string, int>(m_AssetObjects.Length);
             m_GuidMap = new Dictionary<string, int>(m_AssetObjects.Length);
             m_InternalIdMap = new Dictionary<long, int>(m_AssetObjects.Length);
 
             Assets = new Asset[m_AssetObjects.Length];
-            for(int i = 0; i < m_AssetObjects.Length; i++)
+            for (int i = 0; i < m_AssetObjects.Length; i++)
             {
                 var instanceId = m_AssetObjects[i].GetInstanceID();
                 var hasGuid = AssetDatabase.TryGetGUIDAndLocalFileIdentifier(instanceId, out var guid, out long localId);
@@ -79,8 +82,9 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
         public void Sync(Asset[] dbAssets)
         {
             m_AssetIdMap = new Dictionary<int, int>(m_AssetObjects.Length);
-            
+
             // Try to match the asset id with object index (either with internal id or name)
+            m_IndexAssetIds = new int[m_AssetObjects.Length];
             foreach (var dbAsset in dbAssets)
             {
                 var index = GetAssetIndex(dbAsset);
@@ -89,6 +93,7 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
                 Assets[index].InternalGuid = dbAsset.InternalGuid;
                 Assets[index].Name = dbAsset.Name;
                 m_AssetIdMap[dbAsset.Id] = index;
+                m_IndexAssetIds[index] = dbAsset.Id;
             }
         }
 
@@ -102,56 +107,38 @@ public class AssetCache : ScriptableObject, ISerializationCallbackReceiver
 
             return -1;
         }
-    }
-    #endregion
 
-    #region Singleton
-    public static AssetCache Main
-    {
-        get
+        public object GetAsset(int assetId)
         {
-            if (m_Instance == null)
-            {
-                m_Instance = Resources.LoadAll<AssetCache>("").FirstOrDefault();
-                Debug.Assert(m_Instance != null, "Asset Cache could not be found!");
-            }
+            Debug.Assert(assetId >= 0 && m_AssetIdMap.ContainsKey(assetId), $"Asset Id: {assetId} is not valid. Cache Type: {CacheType}, Class: {nameof(T)}");
+            var index = m_AssetIdMap[assetId];
+            return m_AssetObjects[index];
+        }
 
-            return m_Instance;
+        public int GetAssetIndex(int assetId)
+        {
+            return m_AssetIdMap[assetId];
+        }
+
+        public void SerializeCache()
+        {
+            m_NameMap = new Dictionary<string, int>(m_AssetObjects.Length);
+            m_GuidMap = new Dictionary<string, int>(m_AssetObjects.Length);
+            m_InternalIdMap = new Dictionary<long, int>(m_AssetObjects.Length);
+            m_NameMap.Clear();
+            m_GuidMap.Clear();
+            m_InternalIdMap.Clear();
+            m_AssetIdMap.Clear();
+
+            for (int i = 0; i < m_IndexAssetIds.Length; i++)
+            {
+                var id = m_IndexAssetIds[i];
+                var asset = Assets[id];
+                m_NameMap[asset.Name] = i;
+                m_InternalIdMap[asset.InternalId] = i;
+                m_AssetIdMap[id] = i;
+                m_GuidMap[asset.Guid] = i;
+            }
         }
     }
-    static AssetCache m_Instance = null;
-    #endregion
-    
-    [Header("Resource Local Path")]
-    public string MaterialsPath = "Materials";
-    public string SpritesPath = "Art/Sprites";
-    public string ParticleSystemsPath = "ParticleSystems";
-    public string TrailRenderersPath = "TrailRenderers";
-
-    public List<IUnityAssetCache> Caches { get; private set; }
-
-    public UnityAssetCache<Material> MaterialCache { get; private set; }
-    public UnityAssetCache<TrailRenderer> TrailRendererCache { get; private set; }
-    public UnityAssetCache<ParticleSystem> ParticleSystemCache { get; private set; }
-    public UnityAssetCache<Sprite> SpriteCache { get; private set; }
-
-    public void OnAfterDeserialize() { }
-    public void OnBeforeSerialize() { }
-
-    #if UNITY_EDITOR
-    public void RebuildCache()
-    {
-        MaterialCache = new UnityAssetCache<Material>(MaterialsPath, AssetType.Material);
-        SpriteCache = new UnityAssetCache<Sprite>(SpritesPath, AssetType.Sprite);
-        ParticleSystemCache = new UnityAssetCache<ParticleSystem>(ParticleSystemsPath, AssetType.ParticleSystem);
-        TrailRendererCache = new UnityAssetCache<TrailRenderer>(TrailRenderersPath, AssetType.TrailSystem);
-        Caches = new List<IUnityAssetCache>()
-        {
-            SpriteCache,
-            ParticleSystemCache,
-            TrailRendererCache,
-            MaterialCache
-        };
-    }
-    #endif
 }

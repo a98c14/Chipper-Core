@@ -21,6 +21,7 @@ namespace Chipper.Prefabs.Network
         private readonly string     m_ModulesEndpoint           = "/modules";
         private readonly string     m_CreateTextureEndpoint     = "/textures";
         private readonly string     m_SpritesEndpoint           = "/sprites";
+        private readonly string     m_AnimationsEndpoint        = "/animations";
         private readonly string     m_PrefabsEndpoint           = "/prefabs";
         private readonly string     m_GenerateAnimationEndpoint = "/animations/generate";
         private readonly string     m_SyncAssets                = "/assets/sync";
@@ -80,6 +81,14 @@ namespace Chipper.Prefabs.Network
             return null;
         }
 
+        public async Task<Data.Response.Animation[]> GetAnimationsAsync()
+        {
+            var res = await m_Client.GetAsync(m_AnimationsEndpoint);
+            var text = await res.Content.ReadAsStringAsync();
+            if (res.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<Data.Response.Animation[]>(text);
+            return null;
+        }
 
         public IEnumerator GetPrefabsEnumerable()
         {
@@ -113,6 +122,22 @@ namespace Chipper.Prefabs.Network
             else
             {
                 yield return JsonConvert.DeserializeObject<Asset[]>(request.downloadHandler.text);
+            }
+        }
+
+        public IEnumerator GetAnimations()
+        {
+            using var request = new UnityWebRequest(m_BaseUrl + m_AnimationsEndpoint, "GET");
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.Log(request.error);
+            }
+            else
+            {
+                yield return JsonConvert.DeserializeObject<Data.Response.Animation[]>(request.downloadHandler.text);
             }
         }
 
