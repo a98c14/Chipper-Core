@@ -1,14 +1,11 @@
-﻿using UnityEngine;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
-using Unity.Collections;
-using Unity.Burst;
 using Chipper.Rendering;
 
 namespace Chipper.Animation
 {
     [UpdateInGroup(typeof(AnimationSystemGroup))]
-    public class AnimationSystem : JobComponentSystem
+    public partial class AnimationSystem : SystemBase
     {
         BeginInitializationEntityCommandBufferSystem m_CommandBufferSystem;
 
@@ -17,12 +14,12 @@ namespace Chipper.Animation
             m_CommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
             var dt = Time.DeltaTime;
             var commandBuffer = m_CommandBufferSystem.CreateCommandBuffer().AsParallelWriter();
 
-            var jobHandle = Entities
+            Entities
                 .WithName("AnimationSystem")
                 .ForEach((Entity entity, int entityInQueryIndex, ref Animator2D animator, ref SpriteID sprite) =>
                 {
@@ -42,10 +39,9 @@ namespace Chipper.Animation
                         sprite = animation[animator.Frame];
                     }
                 })
-                .Schedule(inputDeps);
+                .Schedule();
 
-            m_CommandBufferSystem.AddJobHandleForProducer(jobHandle);
-            return jobHandle;
+            m_CommandBufferSystem.AddJobHandleForProducer(Dependency);
         }
 
         static void Transition(int index, Entity entity, ref Animator2D animator, EntityCommandBuffer.ParallelWriter commandBuffer)
@@ -64,6 +60,5 @@ namespace Chipper.Animation
                     break;
             }
         }
-
     }
 }

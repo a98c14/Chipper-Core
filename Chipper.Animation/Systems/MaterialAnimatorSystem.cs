@@ -2,16 +2,14 @@
 using Unity.Jobs;
 using Unity.Collections;
 using Unity.Burst;
-using Unity.Transforms;
 
 namespace Chipper.Rendering
 {
     [UpdateInGroup(typeof(AnimationSystemGroup))]
-    public class MaterialAnimatorSystem : JobComponentSystem
+    public partial class MaterialAnimatorSystem : SystemBase
     {
         [BurstCompile]
-        [RequireComponentTag(typeof(MaterialUpdateElement), typeof(MaterialAnimation))]
-        struct Animate : IJobForEachWithEntity<Translation>
+        partial struct Animate : IJobEntity
         {
             [ReadOnly] public float Dt;
             [ReadOnly] public EntityCommandBuffer.ParallelWriter  CommandBuffer;
@@ -53,7 +51,7 @@ namespace Chipper.Rendering
                 };
             }
 
-            public void Execute(Entity entity, int index,[ReadOnly] ref Translation translation)
+            public void Execute(Entity entity, [EntityInQueryIndex] int index)
             {
                 var materialBuffer = MaterialUpdateBuffers[entity];
                 var animationBuffer = MaterialAnimationBuffers[entity];
@@ -78,23 +76,24 @@ namespace Chipper.Rendering
         }
 
         BeginInitializationEntityCommandBufferSystem m_CommandBufferSystem;
+        EntityQuery m_Query;
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnCreate()
         {
-            var job = new Animate()
+            m_CommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
+            m_Query = GetEntityQuery(ComponentType.ReadOnly<MaterialAnimation>(), ComponentType.ReadOnly<MaterialUpdateElement>());
+        }
+
+        protected override void OnUpdate()
+        {
+            new Animate()
             {
                 Dt = UnityEngine.Time.deltaTime,
                 MaterialAnimationBuffers = GetBufferFromEntity<MaterialAnimation>(false),
                 MaterialUpdateBuffers = GetBufferFromEntity<MaterialUpdateElement>(false),
                 CommandBuffer = m_CommandBufferSystem.CreateCommandBuffer().AsParallelWriter(),
-            }.Schedule(this, inputDeps);
-            m_CommandBufferSystem.AddJobHandleForProducer(job);
-            return job;
-        }
-
-        protected override void OnCreate()
-        {
-            m_CommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
+            }.ScheduleParallel(m_Query);
+            m_CommandBufferSystem.AddJobHandleForProducer(Dependency);
         }
     }
 }

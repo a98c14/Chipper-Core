@@ -2,7 +2,7 @@
 
 namespace Chipper.Transforms
 {
-    public class ChildTranslationSystem : SystemBase
+    public partial class ChildTranslationSystem : SystemBase
     {
         protected override void OnUpdate()
         {
