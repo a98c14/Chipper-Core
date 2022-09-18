@@ -20,7 +20,7 @@ namespace Chipper.Prefabs.Network
     /// </summary>
     public class HyperionClient
     {
-        private readonly string     m_BaseUrl                   = "http://localhost:8000";
+        private readonly string     m_BaseUrl                   = "http://192.168.1.6:8000";
         private readonly string     m_ModulesEndpoint           = "/modules";
         private readonly string     m_CreateTextureEndpoint     = "/textures";
         private readonly string     m_SpritesEndpoint           = "/sprites";
