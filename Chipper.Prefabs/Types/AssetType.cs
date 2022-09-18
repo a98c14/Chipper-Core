@@ -2,7 +2,8 @@ namespace Chipper.Prefabs.Types
 {
     public enum AssetType
     {
-        Material = 0,
+        Undefined = 0,
+        Material,
         MaterialAnimation,
         ParticleSystem,
         TrailSystem,

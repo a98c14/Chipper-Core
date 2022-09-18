@@ -4,8 +4,8 @@ namespace Chipper.Prefabs.Data.Response
     {
         public int Id { get; set; }
         public string Name { get; set; }       
-        public Transform Transform { get; set; }
-        public Renderer Renderer { get; set; } 
+        public PrefabTransform Transform { get; set; }
+        public PrefabRenderer Renderer { get; set; } 
         public Collider[] Colliders { get; set; }
         public PrefabModulePart[] Modules { get; set;}
     }

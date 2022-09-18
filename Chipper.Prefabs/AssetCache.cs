@@ -81,13 +81,18 @@ namespace Chipper.Prefabs
 
         public void Sync(Asset[] dbAssets)
         {
-            m_AssetIdMap = new Dictionary<int, int>(m_AssetObjects.Length);
+            m_AssetIdMap = new Dictionary<int, int>(dbAssets.Length);
 
             // Try to match the asset id with object index (either with internal id or name)
-            m_IndexAssetIds = new int[m_AssetObjects.Length];
+            m_IndexAssetIds = new int[dbAssets.Length];
             foreach (var dbAsset in dbAssets)
             {
                 var index = GetAssetIndex(dbAsset);
+                if(index == -1)
+                {
+                    Debug.Log($"Could not find asset for {dbAsset.Name}");
+                    continue;
+                }
                 Assets[index].InternalId = dbAsset.InternalId;
                 Assets[index].Guid = dbAsset.Guid;
                 Assets[index].InternalGuid = dbAsset.InternalGuid;

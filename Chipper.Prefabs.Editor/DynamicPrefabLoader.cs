@@ -31,7 +31,7 @@ namespace Chipper.Prefabs
         [MenuItem("Dynamic Prefabs/Upload Sprites")]
         public static void UploadSprites()
         {
-            var path = @"F:\work\RogueChampions\RogueChampions\Assets\Resources\Art\Sprites\";
+            var path = @"C:\Users\selim\source\github\rogue-champions\RogueChampions\Assets\Resources\Art\Sprites";
             var client = new HyperionClient();
             var textures = AssetManager.GetSpriteData(path);
             foreach (var texture in textures)

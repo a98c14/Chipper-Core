@@ -9,11 +9,17 @@ using Chipper.Prefabs.Network;
 using Chipper.Prefabs.Data;
 using Chipper.Prefabs.Types;
 using Chipper.Animation;
+using Chipper.Transforms;
+using static UnityEngine.EventSystems.EventTrigger;
+using UnityEngine.UIElements;
+using Unity.Mathematics;
+using Chipper.Rendering;
 
 namespace Chipper.Prefabs.Conversion
 {
     [AlwaysUpdateSystem]
-    public class PrefabConversionSystem : ComponentSystem, IPrefabConversionSystem
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public partial class PrefabConversionSystem : ComponentSystem, IPrefabConversionSystem
     {
         public List<PrefabEntity> PrefabEntities { get; private set; }
         Dictionary<string, int> m_IdNameMap;
@@ -26,9 +32,14 @@ namespace Chipper.Prefabs.Conversion
         // Maps prefab part ids to actual IPrefabPart implementations;
         Dictionary<int, IPrefabModule> m_ComponentMap = new Dictionary<int, IPrefabModule>();
 
+        Data.Response.Prefab[] m_Prefabs;
+        Data.Response.PrefabTransform[] m_Transforms;
+        Data.Response.PrefabRenderer[] m_Renderers;
         AssetCacheManager m_AssetCache;
+        bool m_IsInitialized;
+        bool m_ReadyToInitialize;
 
-        protected async override void OnCreate()
+        protected override async void OnCreate()
         {
             m_EntityNameMap = new Dictionary<string, PrefabEntity>();
             m_EntityIdMap = new Dictionary<int, PrefabEntity>();
@@ -40,33 +51,18 @@ namespace Chipper.Prefabs.Conversion
             LoadModules();
 
             // Map module names to module ids
-            var dbModules = await client.GetModules();
-            foreach(var module in dbModules)
+            var dbModules = await client.GetModulesAsync();
+            // var dbModules = client.GetModules();
+            foreach (var module in dbModules)
                 m_ModuleNameIdMap[module.Name] = module.Id;
 
             // Load prefabs and create prefab entities
-            var prefabs = await client.GetPrefabsDetailed();
-            foreach (var prefab in prefabs)
-            {
-                var entity = EntityManager.CreateEntity(typeof(Prefab));
-                EntityManager.SetName(entity, prefab.Name);
+            m_Prefabs = await client.GetPrefabsDetailedAsync();
 
-                // TODO(selim): Instead of serializing to json and deserializing just convert
-                // from dictionary to desired type directly
-                foreach (var (name, value) in PrefabParser.SerializePrefabModules(prefab))
-                {
-                    var internalId = m_IdNameMap[name];
-                    var m = m_ComponentMap[internalId];
-                    var js = (IPrefabModule)JsonConvert.DeserializeObject(value, m.GetType(), new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                    });
-                    js.Convert(entity, EntityManager, this);
-                }
-
-                SavePrefabEntity(prefab, entity);
-            }
+            // Load prefabs and create prefab entities
+            m_Transforms = await client.GetPrefabTransformsAsync();
+            m_Renderers= await client.GetPrefabRenderersAsync();
+            m_ReadyToInitialize = true;
         }
 
 
@@ -106,7 +102,85 @@ namespace Chipper.Prefabs.Conversion
 
         protected override void OnUpdate()
         {
+            if(m_IsInitialized || !m_ReadyToInitialize)
+                return;
             
+            // var prefabs = client.GetPrefabsDetailed();
+            foreach (var prefab in m_Prefabs)
+            {
+                var entity = EntityManager.CreateEntity(typeof(Prefab));
+                EntityManager.SetName(entity, prefab.Name);
+
+                // TODO(selim): Instead of serializing to json and deserializing just convert
+                // from dictionary to desired type directly
+                foreach (var (name, value) in PrefabParser.SerializePrefabModules(prefab))
+                {
+                    var internalId = m_IdNameMap[name];
+                    var m = m_ComponentMap[internalId];
+                    Debug.Log($"Deserializing module {name}");
+                    var module = (IPrefabModule)JsonConvert.DeserializeObject(value, m.GetType(), new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    });
+                    module.Convert(entity, EntityManager, this);
+                }
+
+                SavePrefabEntity(prefab, entity);
+            }
+
+            // Set entity transforms
+            foreach(var transform in m_Transforms)
+            {
+                var entity = m_EntityIdMap[transform.PrefabId].Entity;
+                EntityManager.AddComponentData(entity, new Position2D { Value = transform.Position.Float3 });
+                EntityManager.AddComponentData(entity, new Rotation2D { Value = transform.Rotation.Z });
+                EntityManager.AddComponentData(entity, new Scale2D { Value = new float2(transform.Scale.X, transform.Scale.Y) });
+            }
+
+            // Set entity renderers
+            foreach (var renderer in m_Renderers)
+            {
+                var entity = m_EntityIdMap[renderer.PrefabId].Entity;
+
+                // If no material is attached to entity, do not render it
+                if (renderer.MaterialAssetId == 0 || renderer.MaterialAssetId == null)
+                    continue;
+
+                // Set material
+                var material = GetMaterial(renderer.MaterialAssetId ?? 0);
+                EntityManager.AddSharedComponentData(entity, new MaterialInfo
+                {
+                    MaterialID = material.GetHashCode(),
+                });
+
+                // Set sprite
+                var spriteIndex = 0;
+                if (renderer.SpriteAssetId != null && renderer.SpriteAssetId > 0)
+                {
+                    spriteIndex = GetSpriteIndex(renderer.SpriteAssetId ?? 0);
+                }
+                EntityManager.AddComponentData(entity, new SpriteID
+                {
+                    Value = spriteIndex,
+                });
+
+                // Set render info
+                EntityManager.AddComponentData(entity, new RenderInfo
+                {
+                    Color = new Color32(255, 255, 255, 255),
+                    IsDefaultDirectionRight = !renderer.FlipX,
+                    Layer = GetUnityRenderLayerId((RenderLayer)renderer.RenderLayer),
+                    SortingLayer = GetUnitySortingLayerId((RenderSortLayer)renderer.RenderSortLayer),
+                });
+
+                EntityManager.AddComponentData(entity, new RenderFlipState
+                {
+                    flipX = renderer.FlipX,
+                    flipY = renderer.FlipY,
+                });
+            }
+            m_IsInitialized = true;
         }
 
         public bool TryGetPrefabEntity(int prefabId, out PrefabEntity prefabEntity)
@@ -157,6 +231,7 @@ namespace Chipper.Prefabs.Conversion
 
         public Animation2D GetAnimation(int id)
         {
+            if(id == 0) return new Animation2D();
             var anim = m_AssetCache.GetAnimation(id);
             return m_AssetCache.CreateAnimationBlob(anim);
         }
@@ -199,7 +274,8 @@ namespace Chipper.Prefabs.Conversion
             PrefabEntities.Add(p);
         }
 
-        public UnityEngine.Sprite GetSprite(int spriteId) => m_AssetCache.GetAsset<UnityEngine.Sprite>(spriteId);
+        public Material GetMaterial(int materialAssetId) => m_AssetCache.GetAsset<Material>(materialAssetId);
+        public UnityEngine.Sprite GetSprite(int spriteAssetId) => m_AssetCache.GetAsset<UnityEngine.Sprite>(spriteAssetId);
         public int GetSpriteIndex(int spriteId) => m_AssetCache.SpriteCache.GetAssetIndex(spriteId);
     }
 }

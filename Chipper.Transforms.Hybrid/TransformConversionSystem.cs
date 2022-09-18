@@ -1,6 +1,5 @@
 ﻿using Unity.Transforms;
 using Unity.Mathematics;
-using Unity.Entities;
 using UnityEngine;
 
 namespace Chipper.Transforms

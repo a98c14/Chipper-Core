@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Chipper.Prefabs
 {
     [CustomEditor(typeof(AssetCacheManager))]
-    public class SpriteLoaderEditor : Editor
+    public class AssetCacheEditor : Editor
     {
         public override void OnInspectorGUI()
         {

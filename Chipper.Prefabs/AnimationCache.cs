@@ -26,6 +26,7 @@ namespace Chipper.Prefabs
         // Internal index mapping structures
         private Dictionary<string, int> m_NameMap;
 
+
         public void SaveAnimations(Data.Response.Animation[] animations)
         {
             m_Animations = animations;

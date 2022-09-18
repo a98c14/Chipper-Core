@@ -2,11 +2,14 @@
 using Chipper.Prefabs.Data.Response;
 using Chipper.Prefabs.Types;
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -23,6 +26,8 @@ namespace Chipper.Prefabs.Network
         private readonly string     m_SpritesEndpoint           = "/sprites";
         private readonly string     m_AnimationsEndpoint        = "/animations";
         private readonly string     m_PrefabsEndpoint           = "/prefabs";
+        private readonly string     m_PrefabTransformsEndpoint = "/prefab-transforms";
+        private readonly string     m_PrefabRenderersEndpoint = "/prefab-renderers";
         private readonly string     m_GenerateAnimationEndpoint = "/animations/generate";
         private readonly string     m_SyncAssets                = "/assets/sync";
         private readonly HttpClient m_Client = new HttpClient();
@@ -41,6 +46,24 @@ namespace Chipper.Prefabs.Network
             return null;
         }
 
+        public async Task<PrefabTransform[]> GetPrefabTransformsAsync()
+        {
+            var res = await m_Client.GetAsync(m_PrefabTransformsEndpoint);
+            var text = await res.Content.ReadAsStringAsync();
+            if (res.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<PrefabTransform[]>(text);
+            return null;
+        }
+
+        public async Task<PrefabRenderer[]> GetPrefabRenderersAsync()
+        {
+            var res = await m_Client.GetAsync(m_PrefabRenderersEndpoint);
+            var text = await res.Content.ReadAsStringAsync();
+            if (res.IsSuccessStatusCode)
+                return JsonConvert.DeserializeObject<PrefabRenderer[]>(text);
+            return null;
+        }
+
         public async Task<Data.Sprite[]> GetSpritesAsync()
         {
             var res = await m_Client.GetAsync(m_SpritesEndpoint);
@@ -50,7 +73,7 @@ namespace Chipper.Prefabs.Network
             return null;
         }
 
-        public async Task<Prefab[]> GetPrefabsDetailed()
+        public async Task<Prefab[]> GetPrefabsDetailedAsync()
         {
             var resp = await m_Client.GetAsync(m_PrefabsEndpoint);
             var text = await resp.Content.ReadAsStringAsync();
@@ -72,12 +95,48 @@ namespace Chipper.Prefabs.Network
             return detailedPrefabs.ToArray();
         }
 
-        public async Task<ModulePartSimple[]> GetModules()
+        public Prefab[] GetPrefabsDetailed()
+        {
+            var request = UnityWebRequest.Get(m_BaseUrl + m_PrefabsEndpoint);
+            request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                var prefabs = JsonConvert.DeserializeObject<PrefabSimple[]>(request.downloadHandler.text);
+                var detailedPrefabs = new List<Prefab>();
+                foreach (var prefab in prefabs)
+                {
+                    var innerRequest = UnityWebRequest.Get(m_BaseUrl + m_PrefabsEndpoint + $"/{prefab.Id}");
+                    innerRequest.SendWebRequest();
+
+                    if(request.result != UnityWebRequest.Result.Success)
+                        continue;
+
+                    var p = JsonConvert.DeserializeObject<Prefab>(innerRequest.downloadHandler.text);
+                    detailedPrefabs.Add(p);
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<ModulePartSimple[]> GetModulesAsync()
         {
             var res = await m_Client.GetAsync(m_ModulesEndpoint);
             var text = await res.Content.ReadAsStringAsync();
             if (res.IsSuccessStatusCode)
                 return JsonConvert.DeserializeObject<ModulePartSimple[]>(text);
+            return null;
+        }
+
+        public ModulePartSimple[] GetModules()
+        {
+            var request = UnityWebRequest.Get(m_BaseUrl + m_ModulesEndpoint);
+            request.SendWebRequest();
+            if(request.result == UnityWebRequest.Result.Success)
+            {
+                return JsonConvert.DeserializeObject<ModulePartSimple[]>(request.downloadHandler.text);
+            }
+
             return null;
         }
 

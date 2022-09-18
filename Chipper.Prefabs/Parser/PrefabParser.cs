@@ -8,8 +8,6 @@ namespace Chipper.Prefabs.Parser
 {        
     public static class PrefabParser
     {
-
-
         /// <summary>
         /// For each prefab in detailed prefabs, convert the modules
         /// of the prefab to JSON format

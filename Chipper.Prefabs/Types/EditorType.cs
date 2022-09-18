@@ -1,8 +1,10 @@
 namespace Chipper.Prefabs.Types
 {
+    // DO NOT UPDATE EXISTING VALUES
     public enum EditorType
     {
-        Object = 0,
+        Undefined = 0,
+        Object = 1,
         Range,
         Color,
         Animation,

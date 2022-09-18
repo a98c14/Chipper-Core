@@ -18,7 +18,6 @@ namespace Chipper.Rendering
 
         public void Convert(Entity entity, EntityManager dstManager, IPrefabConversionSystem conversionSystem)
         {
-            
             dstManager.AddComponentData(entity, new SpriteID
             {
                 Value = conversionSystem.GetSpriteIndex(SpriteId),
