@@ -28,6 +28,7 @@ namespace Chipper.Prefabs
         /// <summary>
         /// Stores the asset index location with asset id key
         /// </summary>
+        [SerializeField]
         private Dictionary<int, int> m_AssetIdMap;
 
         /// <summary>
@@ -47,16 +48,37 @@ namespace Chipper.Prefabs
         public AssetCache(string resourcePath, AssetType type)
         {
             CacheType = type;
-            RebuildCache(resourcePath);
+            if(m_AssetObjects != null)
+            {
+                m_NameMap = new Dictionary<string, int>(Assets.Length);
+                m_GuidMap = new Dictionary<string, int>(Assets.Length);
+                m_InternalIdMap = new Dictionary<long, int>(Assets.Length);
+                m_AssetIdMap = new Dictionary<int, int>(Assets.Length);
+
+                for (int i = 0; i < Assets.Length; i++)
+                {
+                    var asset = Assets[i];
+                    Assets[i] = asset;
+                    m_GuidMap[asset.InternalGuid] = i;
+                    m_InternalIdMap[asset.InternalId] = i;
+                    m_NameMap[asset.Name] = i;
+                    m_AssetIdMap[asset.Id] = i;
+                }
+            }
+            else
+            {
+                RebuildCache(resourcePath);
+            }
         }
 
         public void RebuildCache(string resourcePath)
         {
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
             m_AssetObjects = Resources.LoadAll<T>(resourcePath);
             m_NameMap = new Dictionary<string, int>(m_AssetObjects.Length);
             m_GuidMap = new Dictionary<string, int>(m_AssetObjects.Length);
             m_InternalIdMap = new Dictionary<long, int>(m_AssetObjects.Length);
+            m_AssetIdMap = new Dictionary<int, int>(m_AssetObjects.Length);
 
             Assets = new Asset[m_AssetObjects.Length];
             for (int i = 0; i < m_AssetObjects.Length; i++)
@@ -75,6 +97,7 @@ namespace Chipper.Prefabs
                 m_GuidMap[asset.InternalGuid] = i;
                 m_InternalIdMap[asset.InternalId] = i;
                 m_NameMap[asset.Name] = i;
+                m_AssetIdMap[asset.Id] = i;
             }
 #endif
         }

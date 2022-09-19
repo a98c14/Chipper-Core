@@ -66,6 +66,10 @@ namespace Chipper.Prefabs.Parser
 
                 // Get the map for the module
                 var d = (Dictionary<string, object>)moduleMap[module.Name];
+
+                if(module.Children == null)
+                    continue;
+
                 foreach (var child in module.Children)
                 {
                     // If module has children link their maps with parent map
