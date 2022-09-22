@@ -2,6 +2,7 @@ using Chipper.Prefabs.Types;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,7 +21,7 @@ namespace Chipper.Prefabs
     }
 
     [Serializable]
-    public class AssetCache<T> : IUnityAssetCache where T : UnityEngine.Object
+    public class AssetCache<T> : ISerializationCallbackReceiver, IUnityAssetCache where T : UnityEngine.Object
     {
         public AssetType CacheType { get; private set; }
         public Asset[] Assets { get; private set; }
@@ -44,6 +45,27 @@ namespace Chipper.Prefabs
         private Dictionary<string, int> m_NameMap;
         private Dictionary<long, int> m_InternalIdMap;
         private Dictionary<string, int> m_GuidMap;
+
+        public void OnAfterDeserialize()
+        {
+            if (m_AssetObjects != null)
+            {
+                m_NameMap = new Dictionary<string, int>(Assets.Length);
+                m_GuidMap = new Dictionary<string, int>(Assets.Length);
+                m_InternalIdMap = new Dictionary<long, int>(Assets.Length);
+                m_AssetIdMap = new Dictionary<int, int>(Assets.Length);
+
+                for (int i = 0; i < Assets.Length; i++)
+                {
+                    var asset = Assets[i];
+                    Assets[i] = asset;
+                    m_GuidMap[asset.InternalGuid] = i;
+                    m_InternalIdMap[asset.InternalId] = i;
+                    m_NameMap[asset.Name] = i;
+                    m_AssetIdMap[asset.Id] = i;
+                }
+            }
+        }
 
         public AssetCache(string resourcePath, AssetType type)
         {
@@ -70,6 +92,7 @@ namespace Chipper.Prefabs
                 RebuildCache(resourcePath);
             }
         }
+
 
         public void RebuildCache(string resourcePath)
         {
@@ -168,5 +191,7 @@ namespace Chipper.Prefabs
                 m_GuidMap[asset.Guid] = i;
             }
         }
+
+        public void OnBeforeSerialize() { }
     }
 }

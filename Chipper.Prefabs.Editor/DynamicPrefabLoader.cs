@@ -12,7 +12,7 @@ namespace Chipper.Prefabs
         [MenuItem("Dynamic Prefabs/Generate Animations")]
         public static void GenerateAnimations()
         {
-            var client = new HyperionClient();
+            var client = new HyperionClient(AssetCacheManager.Main.HyperionUrl);
             EditorCoroutineUtility.StartCoroutineOwnerless(client.GenerateAnimations());
         }
 
@@ -20,7 +20,7 @@ namespace Chipper.Prefabs
         public static void SavePrefabs()
         {
             // Sync prefab structures with hyperion.
-            var client = new HyperionClient();
+            var client = new HyperionClient(AssetCacheManager.Main.HyperionUrl);
             var jsons = AssetManager.GetModuleJsonData();
             foreach(var json in jsons)
             {
@@ -32,7 +32,7 @@ namespace Chipper.Prefabs
         public static void UploadSprites()
         {
             var path = @"C:\Users\selim\source\github\rogue-champions\RogueChampions\Assets\Resources\Art\Sprites";
-            var client = new HyperionClient();
+            var client = new HyperionClient(AssetCacheManager.Main.HyperionUrl);
             var textures = AssetManager.GetSpriteData(path);
             foreach (var texture in textures)
             {

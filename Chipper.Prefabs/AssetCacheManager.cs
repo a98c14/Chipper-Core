@@ -34,6 +34,9 @@ namespace Chipper.Prefabs
         static AssetCacheManager m_Instance = null;
         #endregion
 
+        public string HyperionUrl = "";
+        public string HyperionWebSocketUrl = "";
+
         [Header("Resource Local Path")]
         public string MaterialsPath = "Materials";
         public string SpritesPath = "Art/Sprites";
@@ -89,6 +92,7 @@ namespace Chipper.Prefabs
             SpriteCache = new AssetCache<Sprite>(SpritesPath, AssetType.Sprite);
             ParticleSystemCache = new AssetCache<ParticleSystem>(ParticleSystemsPath, AssetType.ParticleSystem);
             TrailRendererCache = new AssetCache<TrailRenderer>(TrailRenderersPath, AssetType.TrailSystem);
+            
             Caches = new List<IUnityAssetCache>()
             {
                 SpriteCache,

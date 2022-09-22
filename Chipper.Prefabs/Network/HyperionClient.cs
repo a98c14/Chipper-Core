@@ -9,7 +9,6 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -20,7 +19,7 @@ namespace Chipper.Prefabs.Network
     /// </summary>
     public class HyperionClient
     {
-        private readonly string     m_BaseUrl                   = "http://192.168.1.6:8000";
+        private readonly string     m_BaseUrl;
         private readonly string     m_ModulesEndpoint           = "/modules";
         private readonly string     m_CreateTextureEndpoint     = "/textures";
         private readonly string     m_SpritesEndpoint           = "/sprites";
@@ -32,9 +31,10 @@ namespace Chipper.Prefabs.Network
         private readonly string     m_SyncAssets                = "/assets/sync";
         private readonly HttpClient m_Client = new HttpClient();
 
-        public HyperionClient()
+        public HyperionClient(string url)
         {
-            m_Client.BaseAddress = new System.Uri(m_BaseUrl);
+            m_BaseUrl = url;
+            m_Client.BaseAddress = new Uri(url);
         }
 
         public async Task<PrefabSimple[]> GetPrefabsAsync()

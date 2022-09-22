@@ -1,5 +1,8 @@
+using System;
+
 namespace Chipper.Prefabs.Data.Response
 {
+    [Serializable]
     public class Animation
     {
         public int Id { get; set; }

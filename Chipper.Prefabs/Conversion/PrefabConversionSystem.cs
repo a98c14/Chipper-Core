@@ -46,7 +46,7 @@ namespace Chipper.Prefabs.Conversion
             m_IdNameMap = new Dictionary<string, int>();
             m_AssetCache = AssetCacheManager.Main;
             PrefabEntities = new List<PrefabEntity>();
-            var client = new HyperionClient();
+            var client = new HyperionClient(m_AssetCache.HyperionUrl);
 
             LoadModules();
 

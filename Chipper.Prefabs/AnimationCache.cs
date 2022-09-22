@@ -10,7 +10,7 @@ using UnityEditor;
 namespace Chipper.Prefabs
 {
     [Serializable]
-    public class AnimationCache 
+    public class AnimationCache : ISerializationCallbackReceiver
     {
         /// <summary>
         /// Stores the asset index location with asset id key
@@ -82,5 +82,27 @@ namespace Chipper.Prefabs
                 m_AssetIdMap[id] = i;
             }
         }
+
+        public void OnAfterDeserialize()
+        {
+            if (m_NameMap == null)
+                m_NameMap = new Dictionary<string, int>(m_Animations.Length);
+
+            if (m_AssetIdMap == null)
+                m_AssetIdMap = new Dictionary<int, int>(m_Animations.Length);
+
+            m_NameMap.Clear();
+            m_AssetIdMap.Clear();
+
+            for (int i = 0; i < m_IndexAssetIds.Length; i++)
+            {
+                var id = m_IndexAssetIds[i];
+                var animation = m_Animations[i];
+                m_NameMap[animation.Name] = i;
+                m_AssetIdMap[id] = i;
+            }
+        }
+
+        public void OnBeforeSerialize() { }
     }
 }
