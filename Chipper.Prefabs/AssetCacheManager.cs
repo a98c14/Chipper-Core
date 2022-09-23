@@ -92,6 +92,7 @@ namespace Chipper.Prefabs
             SpriteCache = new AssetCache<Sprite>(SpritesPath, AssetType.Sprite);
             ParticleSystemCache = new AssetCache<ParticleSystem>(ParticleSystemsPath, AssetType.ParticleSystem);
             TrailRendererCache = new AssetCache<TrailRenderer>(TrailRenderersPath, AssetType.TrailSystem);
+            AnimationCache = new AnimationCache();
             
             Caches = new List<IUnityAssetCache>()
             {
